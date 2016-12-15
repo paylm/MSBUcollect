@@ -2,6 +2,8 @@ from flask import Flask,request
 from flask import render_template,redirect,url_for
 from flask_pymongo import PyMongo
 
+import utils
+
 app = Flask(__name__)
 app.config.from_object('config')
 
@@ -58,6 +60,25 @@ def adata():
         return "mongo err"
     finally:
         return '1'
+
+@app.route("/admin-index",methods=("GET", "POST"))
+def admin_index():
+    return  render_template("admin-index.html")
+
+
+@app.route("/admin-table",methods=("GET", "POST"))
+def admin_table():
+    data = mongo.db.project.find()
+    for item in data:
+        print item
+    return  render_template("admin-table.html",**locals())
+
+
+@app.route("/export")
+def export():
+    data = mongo.db.project.find()
+    print data
+    utils.excel_tools(data=data,outfile="msbu.xls")
 
 @app.route("/gets",methods=("GET", "POST"))
 def gets():
